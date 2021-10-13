@@ -57,6 +57,7 @@ module.exports = {
 		),
 	async execute(interaction: CommandInteraction) {
 		await interaction.deferReply();
+
 		if (interaction.options.getSubcommandGroup(false) === 'delete') {
 			return await executeDelete(interaction);
 		}

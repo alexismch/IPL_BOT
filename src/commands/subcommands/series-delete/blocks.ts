@@ -1,8 +1,14 @@
 import {CommandInteraction} from 'discord.js';
+import {parseRawStringToNumberArray} from '../../../utils';
 
 export const execute = async (interaction: CommandInteraction) => {
-	console.log(interaction.options.get('blocks'));
-	const blocks = interaction.options.getString('blocks');
-	console.log(blocks);
-	await interaction.followUp(`You have deleted all series for blocks ${blocks}.`);
+	const {
+		rawString: rawBlocks,
+		numbers: blocks
+	} = parseRawStringToNumberArray(interaction.options.getString('blocks', true));
+	if (blocks === null) {
+		return await interaction.followUp('Every block has to be a number.');
+	}
+
+	await interaction.followUp(`<@${interaction.user.id}> has deleted all series for blocks ${rawBlocks}.`);
 };
