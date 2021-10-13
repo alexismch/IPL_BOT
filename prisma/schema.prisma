@@ -1,0 +1,28 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id     String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId String
+  userId String
+  email  String
+}
+
+model Series {
+  id             String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId String
+  bloc           Int
+  seriesNumber   Int
+  roleId         String
+  textChannelId  String
+  voiceChannelId String
+
+  @@unique([bloc, seriesNumber])
+}
