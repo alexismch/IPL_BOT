@@ -14,7 +14,7 @@ const NewMemberStates = {
 const vinciEmailRegex = /[a-z]+\.[a-z]+@student\.vinci\.be/g;
 const verificationCodeRegex = /[0-9]/g;
 
-export const handleGuildMemberAdd = async (guildMember: GuildMember) => {
+export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 	let state: NewMemberStates = NewMemberStates.JUST_JOINED;
 	let email: string;
 
