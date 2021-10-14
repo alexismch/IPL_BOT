@@ -62,6 +62,7 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 				await guildMember.roles.add(VERIFIED_ROLE_ID);
 				await prisma.user.create({
 					data: {
+						guildId: guildMember.guild.id,
 						userId: guildMember.user.id,
 						email
 					}

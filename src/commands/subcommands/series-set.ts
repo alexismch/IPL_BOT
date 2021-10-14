@@ -1,5 +1,14 @@
 import {CommandInteraction} from 'discord.js';
 import {parseRawStringToNumberArray} from '../../utils';
+import {CategoryChannel} from 'discord.js';
+import {getGuildTextCategory} from '../../utils';
+import {Guild} from 'discord.js';
+import {getGuildVoiceCategory} from '../../utils';
+import {getGuildBlocksSeries} from '../../utils';
+import {createGuildBlockSeries} from '../../utils';
+import {deleteGuildSeries} from '../../utils';
+import {createSeries} from '../../utils';
+import {deleteSeries} from '../../utils';
 
 export const execute = async (interaction: CommandInteraction) => {
 	const {
@@ -17,6 +26,42 @@ export const execute = async (interaction: CommandInteraction) => {
 	if (series === null) {
 		return await interaction.followUp('Every series has to be a number.');
 	}
+
+	const textCat: CategoryChannel = await getGuildTextCategory(interaction.guild as Guild);
+	const voiceCat: CategoryChannel = await getGuildVoiceCategory(interaction.guild as Guild);
+
+	const blocksSeries = await getGuildBlocksSeries(interaction.guild as Guild, blocks);
+
+	const newSeries = [];
+	const toDeleteSeries: string[] = [];
+
+	for (let i = 0; i < blocks.length; i++) {
+		const askedBlock = blocks[i];
+		const askedSeriesAmount = series[i];
+		const currentSeries = blocksSeries[askedBlock] || {};
+		const currentSeriesAmount = Object.keys(currentSeries).length;
+		const min = askedSeriesAmount > currentSeriesAmount ? currentSeriesAmount + 1 : 1;
+		const max = askedSeriesAmount > currentSeriesAmount ? askedSeriesAmount : currentSeriesAmount;
+
+		for (let seriesNumber = min; seriesNumber <= max; seriesNumber++) {
+			if (!currentSeries[seriesNumber]) {
+				const series = await createGuildBlockSeries(interaction.guild as Guild,
+					askedBlock,
+					seriesNumber,
+					{
+						voice: voiceCat,
+						text: textCat
+					});
+				newSeries.push(series);
+			} else if (seriesNumber > askedSeriesAmount) {
+				const id = await deleteGuildSeries(interaction.guild as Guild, currentSeries[seriesNumber]);
+				toDeleteSeries.push(id);
+			}
+		}
+	}
+
+	await createSeries(newSeries);
+	await deleteSeries(toDeleteSeries);
 
 	await interaction.followUp(`<@${interaction.user.id}> has set ${rawSeries} series for blocks ${rawBlocks}.`);
 };

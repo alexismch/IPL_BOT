@@ -9,20 +9,20 @@ datasource db {
 }
 
 model User {
-  id     String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id      String @id @default(dbgenerated()) @map("_id") @db.ObjectId
   guildId String
-  userId String
-  email  String
+  userId  String
+  email   String
 }
 
 model Series {
   id             String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  guildId String
-  bloc           Int
+  guildId        String
+  block          Int
   seriesNumber   Int
   roleId         String
   textChannelId  String
   voiceChannelId String
 
-  @@unique([bloc, seriesNumber])
+  @@unique([guildId, block, seriesNumber])
 }
