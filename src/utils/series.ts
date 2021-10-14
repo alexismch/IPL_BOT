@@ -135,3 +135,14 @@ export const deleteSeries = async (seriesIds: string[]) => {
 		});
 	}
 };
+
+export const deleteGuildSeriesList = async (guild: Guild, seriesList: Series[]) => {
+	const toDeleteSeries: string[] = [];
+
+	for (let series of seriesList) {
+		const id = await deleteGuildSeries(guild, series);
+		toDeleteSeries.push(id);
+	}
+
+	await deleteSeries(toDeleteSeries);
+};
