@@ -146,3 +146,16 @@ export const deleteGuildSeriesList = async (guild: Guild, seriesList: Series[]) 
 
 	await deleteSeries(toDeleteSeries);
 };
+
+export const cleanUp = async (guild: Guild) => {
+	const textCat: CategoryChannel = await getGuildTextCategory(guild as Guild);
+	const voiceCat: CategoryChannel = await getGuildVoiceCategory(guild as Guild);
+
+	if (textCat.children.size === 0) {
+		await textCat.delete();
+	}
+
+	if (voiceCat.children.size === 0) {
+		await voiceCat.delete();
+	}
+};

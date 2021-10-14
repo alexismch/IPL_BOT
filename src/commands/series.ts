@@ -5,6 +5,8 @@ import {SlashCommandSubcommandGroupBuilder} from '@discordjs/builders';
 import {SlashCommandStringOption} from '@discordjs/builders';
 import {execute as executeDelete} from './subcommands/series-delete';
 import {execute as executeSet} from './subcommands/series-set';
+import {cleanUp} from '../utils';
+import {Guild} from 'discord.js';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -59,13 +61,13 @@ module.exports = {
 		await interaction.deferReply();
 
 		if (interaction.options.getSubcommandGroup(false) === 'delete') {
-			return await executeDelete(interaction);
+			await executeDelete(interaction);
+		} else if (interaction.options.getSubcommand(false) === 'set') {
+			await executeSet(interaction);
+		} else {
+			await interaction.reply('Bonsoir, non - Amir Coach');
 		}
 
-		if (interaction.options.getSubcommand(false) === 'set') {
-			return await executeSet(interaction);
-		}
-
-		return await interaction.reply('Bonsoir, non - Amir Coach');
+		await cleanUp(interaction.guild as Guild);
 	}
 };
