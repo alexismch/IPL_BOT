@@ -3,6 +3,9 @@ import {DMChannel} from 'discord.js';
 import {prisma} from '../index';
 import crypto from 'crypto';
 import {transporter, VERIFIED_ROLE_ID} from '../utils/config';
+import {MessageEmbed} from 'discord.js';
+import {MessageActionRow} from 'discord.js';
+import {MessageButton} from 'discord.js';
 
 type NewMemberStates = 'JUST_JOINED' | 'WAIT_FOR_EMAIL' | 'WAIT_FOR_CODE'
 const NewMemberStates = {
@@ -14,7 +17,7 @@ const NewMemberStates = {
 const vinciEmailRegex = /[a-z]+\.[a-z]+@student\.vinci\.be/g;
 const verificationCodeRegex = /[0-9]/g;
 
-export const guildMemberAddHandler = async (guildMember: GuildMember) => {
+/*export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 	let state: NewMemberStates = NewMemberStates.JUST_JOINED;
 	let email: string;
 
@@ -73,8 +76,56 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 			}
 		}
 	});
+};*/
 
-	collector.on('end', () => {
-		console.log('Process finished');
+export const guildMemberAddHandler = async (guildMember: GuildMember) => {
+	const embed = new MessageEmbed()
+		.setColor('#3ba55c')
+		.setTitle('Welcome!')
+		.setURL('https://twitch.tv/alexismch')
+		.setDescription(`You just joined **[${guildMember.guild?.name}](https://discord.com/channels/${guildMember.guild?.id})** server, welcome!`)
+		.addField('Verify your account', 'Please follow to link below in order to verify your account.')
+		.addField('Need help?', 'If you need any help, click on the **Help!** button or contact an administrator.');
+
+	const row = new MessageActionRow()
+		.addComponents(
+			new MessageButton()
+				.setStyle('LINK')
+				.setLabel('Verify')
+				.setURL('https://twitch.tv/alexismch'),
+			new MessageButton()
+				.setCustomId('help_button')
+				.setStyle('DANGER')
+				.setLabel('Help!')
+		);
+
+	const dmChannel: DMChannel = await guildMember.createDM();
+	const dmMessage = await dmChannel.send({
+		embeds: [embed],
+		components: [row]
+	});
+
+	const collector = dmMessage.createMessageComponentCollector({
+		componentType: 'BUTTON'
+	});
+
+	collector.on('collect', async interaction => {
+		const messageActionRow = (interaction.message.components as MessageActionRow[])[0];
+		const button = (interaction.component as MessageButton);
+		button.setDisabled(true);
+		button.setStyle('SUCCESS');
+		button.setLabel('Help has been asked');
+
+		await interaction.update({
+			components: [
+				messageActionRow
+					.setComponents(messageActionRow
+						.components
+						.filter(v => v.customId !== button.customId))
+					.addComponents(button)
+			]
+		});
+
+		collector.stop();
 	});
 };
