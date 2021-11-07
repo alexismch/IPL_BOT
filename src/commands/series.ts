@@ -58,6 +58,10 @@ module.exports = {
 					)
 		),
 	async execute(interaction: CommandInteraction) {
+		if (!interaction.guild) {
+			return interaction.reply('Command should be used within a server.');
+		}
+		
 		await interaction.deferReply();
 
 		if (interaction.options.getSubcommandGroup(false) === 'delete') {
