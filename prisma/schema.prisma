@@ -16,11 +16,19 @@ model Settings {
   verifiedRole       String?
 }
 
+model Verification {
+  id         String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId    String
+  userId     String
+  isVerified Boolean @default(false)
+}
+
 model User {
   id      String @id @default(dbgenerated()) @map("_id") @db.ObjectId
   guildId String
   userId  String
   email   String
+  name    String
 }
 
 model Series {
