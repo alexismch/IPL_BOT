@@ -1,0 +1,44 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Settings {
+  id                 String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId            String
+  adminRole          String?
+  helpTicketsChannel String?
+  verifiedRole       String?
+}
+
+model Verification {
+  id         String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId    String
+  userId     String
+  isVerified Boolean @default(false)
+}
+
+model User {
+  id      String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId String
+  userId  String
+  email   String
+  name    String
+}
+
+model Series {
+  id             String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  guildId        String
+  block          Int
+  seriesNumber   Int
+  roleId         String
+  textChannelId  String
+  voiceChannelId String
+
+  @@unique([guildId, block, seriesNumber])
+}

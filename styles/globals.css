@@ -1,16 +1,50 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    background-color: #282c34;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.App {
+    text-align: center;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-title {
+    color: #61dafb;
+}
+
+.App-button {
+    height: 50px;
+    width: 150px;
+    color: #61dafb;
+    background: none;
+    border: 2px #61dafb solid;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.App-button:hover {
+    background: #61dafb;
+    color: #282c34;
+    cursor: pointer;
 }
