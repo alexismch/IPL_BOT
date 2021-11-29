@@ -1,32 +1,13 @@
-import {EventMessage, EventType} from '@azure/msal-browser';
+import {AccountInfo} from '@azure/msal-browser';
 import {AuthenticatedTemplate, UnauthenticatedTemplate, useMsal} from '@azure/msal-react';
 import {Verification} from '@prisma/client';
 import {GetServerSideProps, GetServerSidePropsResult, InferGetServerSidePropsType, NextPage} from 'next';
 import Head from 'next/head';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {loginRequest} from '../../utils/msalConfig';
 import prisma from '../../utils/prisma';
 
 const Confirm: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({verification}) => {
-	const {instance} = useMsal();
-
-	useEffect(() => {
-		const id = instance?.addEventCallback((message: EventMessage) => {
-			if (message.eventType === EventType.LOGIN_SUCCESS) {
-				console.log('yeah');
-			} else {
-				console.log(message.eventType);
-			}
-		});
-		console.log('ok');
-
-		return () => {
-			if (id) {
-				instance.removeEventCallback(id);
-			}
-		};
-	}, [instance]);
-
 	return (
 		<>
 			<Head>
@@ -36,7 +17,7 @@ const Confirm: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> 
 				<Unauthenticated/>
 			</UnauthenticatedTemplate>
 			<AuthenticatedTemplate>
-				<Authenticated/>
+				<Authenticated verification={verification}/>
 			</AuthenticatedTemplate>
 		</>
 	);
@@ -57,16 +38,49 @@ const Unauthenticated = () => {
 	);
 };
 
-const Authenticated = () => {
+const Authenticated = ({verification}: { verification: Verification }) => {
 	const {instance} = useMsal();
+	const account = instance.getActiveAccount() as AccountInfo;
+	const [message, setMessage] = useState<string>('Verification in process...');
+
+	useEffect(() => {
+		fetch(
+			`/api/verification/${verification.id}`,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					email: account.username,
+					name: account.name
+				})
+			}
+		).then(r => {
+				if (r.status !== 200) {
+					return r.json();
+				}
+				setMessage('Thanks for having complete the verification');
+			}
+		).then((body: { message: string } | undefined) => {
+				if (!body) {
+					return;
+				}
+				if (!body.message) {
+					throw new Error();
+				}
+				setMessage(body.message);
+			}
+		).catch((e) => {
+			console.log(e);
+			setMessage('An error occurred during the verification');
+		});
+	}, []);
 
 	return (
 		<>
 			<p>
-				Thanks for having complete the verification
+				{message}
 			</p>
 			<span className="App-title">
-				{instance.getActiveAccount()?.name}
+				{account.name}
 			</span>
 		</>
 	);
@@ -82,12 +96,11 @@ type ConfirmProps = {
 
 export const getServerSideProps: GetServerSideProps<ConfirmProps, ConfirmParams> = async ({params}): Promise<GetServerSidePropsResult<ConfirmProps>> => {
 	try {
-		const verification = await prisma.verification.findUnique({
+		const verification = await prisma.verification.findFirst({
 			where: {
 				id: params?.id
 			}
 		});
-
 		if (!verification) {
 			throw new Error();
 		}

@@ -11,12 +11,9 @@ const pca = new PublicClientApplication(getMsalConfig());
 const MyApp = ({Component, pageProps}: AppProps) => {
 	useEffect(() => {
 		const id = pca?.addEventCallback((message: EventMessage) => {
-			console.log(message);
 			if (message.eventType === EventType.LOGIN_SUCCESS) {
 				pca.setActiveAccount((message.payload as AuthenticationResult).account);
 			}
-
-			console.log(pca.getActiveAccount());
 		});
 
 		return () => {
