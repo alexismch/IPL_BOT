@@ -20,7 +20,6 @@ model Verification {
   id         String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
   guildId    String
   userId     String
-  isVerified Boolean @default(false)
 }
 
 model User {

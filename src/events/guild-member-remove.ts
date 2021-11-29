@@ -1,6 +1,5 @@
-import {GuildMember} from 'discord.js';
+import {GuildMember, PartialGuildMember} from 'discord.js';
 import {prisma} from '../index';
-import {PartialGuildMember} from 'discord.js';
 
 export const guildMemberRemoveHandler = async (guildMember: GuildMember | PartialGuildMember) => {
 	try {
@@ -8,8 +7,17 @@ export const guildMemberRemoveHandler = async (guildMember: GuildMember | Partia
 	} catch (e) {
 		console.log(e);
 	}
+
 	await prisma.user.deleteMany({
 		where: {
+			guildId: guildMember.guild.id,
+			userId: guildMember.user?.id
+		}
+	});
+
+	await prisma.verification.deleteMany({
+		where: {
+			guildId: guildMember.guild.id,
 			userId: guildMember.user?.id
 		}
 	});
