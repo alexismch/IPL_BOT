@@ -9,6 +9,12 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 		}
 	});
 
+	const settings = await prisma.settings.findFirst({
+		where: {
+			guildId: guildMember.guild.id
+		}
+	});
+
 	const embed = new MessageEmbed()
 		.setColor('#3ba55c')
 		.setTitle('Welcome!')
@@ -17,17 +23,21 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 		.addField('Verify your account', 'Please follow to link below in order to verify your account.')
 		.addField('Need help?', 'If you need any help, click on the **Help!** button or contact an administrator.');
 
-	const row = new MessageActionRow()
-		.addComponents(
-			new MessageButton()
-				.setStyle('LINK')
-				.setLabel('Verify')
-				.setURL(`http://localhost:3000/confirm/${verification.id}`),
-			new MessageButton()
-				.setCustomId('help_button')
-				.setStyle('DANGER')
-				.setLabel('Help!')
-		);
+	const components = [
+		new MessageButton()
+			.setStyle('LINK')
+			.setLabel('Verify')
+			.setURL(`http://localhost:3000/confirm/${verification.id}`)
+	];
+
+	if (settings && settings.helpTicketsChannel) {
+		components.push(new MessageButton()
+			.setCustomId('help_button')
+			.setStyle('DANGER')
+			.setLabel('Help!'));
+	}
+
+	const row = new MessageActionRow().addComponents(components);
 
 	const dmChannel: DMChannel = await guildMember.createDM();
 	const dmMessage = await dmChannel.send({
@@ -35,28 +45,47 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 		components: [row]
 	});
 
-	const collector = dmMessage.createMessageComponentCollector({
-		componentType: 'BUTTON'
-	});
-
-	collector.on('collect', async interaction => {
-		const messageActionRow = (interaction.message.components as MessageActionRow[])[0];
-		const button = (interaction.component as MessageButton);
-		button.setDisabled(true);
-		button.setStyle('SUCCESS');
-		button.setLabel('Help has been asked');
-
-		await interaction.update({
-			components: [
-				messageActionRow
-					.setComponents(
-						messageActionRow
-							.components
-							.filter(v => v.customId !== button.customId))
-					.addComponents(button)
-			]
+	if (settings && settings.helpTicketsChannel) {
+		const collector = dmMessage.createMessageComponentCollector({
+			componentType: 'BUTTON'
 		});
 
-		collector.stop();
-	});
+		collector.on('collect', async interaction => {
+			const helpTicketsChannel = guildMember.guild.channels.resolve(settings.helpTicketsChannel as string);
+			const messageActionRow = (interaction.message.components as MessageActionRow[])[0];
+			const button = (interaction.component as MessageButton);
+			button.setDisabled(true);
+
+			try {
+				if (!helpTicketsChannel || !helpTicketsChannel.isText()) {
+					throw new Error();
+				}
+				await helpTicketsChannel.send({
+					embeds: [
+						new MessageEmbed()
+							.setColor('#ed4245')
+							.setTitle('Help requested!')
+							.setDescription(`<@${guildMember.user.id}> requested help for verification!`)
+					]
+				});
+				button.setStyle('SUCCESS');
+				button.setLabel('Help has been requested');
+			} catch (e) {
+				await dmChannel.send('An error occured, please contact an admin by yourself.');
+			}
+
+			await interaction.update({
+				components: [
+					messageActionRow
+						.setComponents(
+							messageActionRow
+								.components
+								.filter(v => v.customId !== button.customId))
+						.addComponents(button)
+				]
+			});
+
+			collector.stop();
+		});
+	}
 };
