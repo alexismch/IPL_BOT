@@ -1,3 +1,4 @@
+import {MessageEmbed} from 'discord.js';
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../utils/prisma';
 
@@ -34,6 +35,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			AND: {
 				guildId: verification.guildId
 			}
+		},
+		select: {
+			id
 		}
 	});
 	if (user) {
@@ -45,7 +49,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			guildId: verification.guildId
 		},
 		select: {
-			verifiedRole: true
+			verifiedRole: true,
+			helpTicketsChannel: true
 		}
 	});
 
@@ -67,6 +72,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 				email: body.email
 			}
 		});
+
+		if (settings.helpTicketsChannel) {
+			await rest.post(Routes.channelMessages(settings.helpTicketsChannel), {
+				body: {
+					embeds: [
+						new MessageEmbed()
+							.setColor('#3ba55c')
+							.setTitle('User verified!')
+							.setDescription(`<@${verification.userId}> has been verified!`)
+							.addField('Name', body.name)
+							.addField('E-mail', body.email)
+					]
+				}
+			});
+		}
 	} else {
 		res.status(449).send({message: 'No verified role specified yet for this server, please contact an admin'});
 	}
