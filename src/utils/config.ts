@@ -1,7 +1,4 @@
-import nodemailer from 'nodemailer';
-import {BitFieldResolvable} from 'discord.js';
-import {IntentsString} from 'discord.js';
-import {PartialTypes} from 'discord.js';
+import {BitFieldResolvable, IntentsString, PartialTypes} from 'discord.js';
 
 export const clientIntents: BitFieldResolvable<IntentsString, number> = [
 	'GUILDS',
@@ -27,17 +24,3 @@ export const clientPartials: PartialTypes[] = [
 	'REACTION',
 	'USER'
 ];
-
-export const SERVER_ID = '896718286430015518';
-export const VERIFIED_ROLE_ID = '897104819246993438';
-
-export const transporter = nodemailer.createTransport({
-	host: 'ssl0.ovh.net',
-	port: 587,
-	secure: false, // true for 465, false for other ports
-	auth: {
-		user: process.env.MAIL_USER, // generated ethereal user
-		pass: process.env.MAIL_PASSWD // generated ethereal password
-	}
-});
-
