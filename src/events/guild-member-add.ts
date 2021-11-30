@@ -27,7 +27,7 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 		new MessageButton()
 			.setStyle('LINK')
 			.setLabel('Verify')
-			.setURL(`http://localhost:3000/confirm/${verification.id}`)
+			.setURL(`${process.env.FRONT_URL}/confirm/${verification.id}`)
 	];
 
 	if (settings && settings.helpTicketsChannel) {
