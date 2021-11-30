@@ -72,7 +72,7 @@ const Authenticated = ({verification}: { verification: Verification }) => {
 			console.log(e);
 			setMessage('An error occurred during the verification');
 		});
-	}, []);
+	}, [account.username, account.name, verification.id]);
 
 	return (
 		<>
