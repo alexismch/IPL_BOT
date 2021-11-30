@@ -11,6 +11,9 @@
     "watch-build": "tsc -w",
     "deploy-commands": "node dist/deploy-commands.js"
   },
+  "engines": {
+    "node": ">=15"
+  },
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
