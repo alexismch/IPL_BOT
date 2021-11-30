@@ -18,7 +18,7 @@ export const guildMemberAddHandler = async (guildMember: GuildMember) => {
 	const embed = new MessageEmbed()
 		.setColor('#3ba55c')
 		.setTitle('Welcome!')
-		.setURL(`http://localhost:3000/confirm/${verification.id}`)
+		.setURL(`${process.env.FRONT_URL}/confirm/${verification.id}`)
 		.setDescription(`You just joined **[${guildMember.guild?.name}](https://discord.com/channels/${guildMember.guild?.id})** server, welcome!`)
 		.addField('Verify your account', 'Please follow to link below in order to verify your account.')
 		.addField('Need help?', 'If you need any help, click on the **Help!** button or contact an administrator.');
