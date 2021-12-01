@@ -5,7 +5,7 @@
   "author": "MICHIELS Alexis",
   "license": "MIT",
   "scripts": {
-    "start": "node",
+    "start": "node dist",
     "dev": "concurrently \"tsc -w\" \"tsnd --respawn dist\"",
     "build": "tsc",
     "watch-build": "tsc -w",
