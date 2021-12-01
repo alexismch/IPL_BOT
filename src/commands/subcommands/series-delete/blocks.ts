@@ -1,8 +1,5 @@
-import {CommandInteraction} from 'discord.js';
-import {parseRawStringToNumberArray} from '../../../utils';
-import {getRawGuildBlockSeries} from '../../../utils';
-import {Guild} from 'discord.js';
-import {deleteGuildSeriesList} from '../../../utils';
+import {CommandInteraction, Guild} from 'discord.js';
+import {deleteGuildSeriesList, getRawGuildBlockSeries, parseRawStringToNumberArray} from '../../../utils';
 
 export const execute = async (interaction: CommandInteraction) => {
 	const {

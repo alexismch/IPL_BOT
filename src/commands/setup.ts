@@ -1,12 +1,7 @@
-import {CommandInteraction} from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {SlashCommandRoleOption} from '@discordjs/builders';
-import {SlashCommandChannelOption} from '@discordjs/builders';
-import {MessageEmbed} from 'discord.js';
-import {prisma} from '../index';
+import {SlashCommandBuilder, SlashCommandChannelOption, SlashCommandRoleOption} from '@discordjs/builders';
 import {Settings} from '@prisma/client';
-import {GuildMemberRoleManager} from 'discord.js';
-import {Permissions} from 'discord.js';
+import {CommandInteraction, GuildMemberRoleManager, MessageEmbed, Permissions} from 'discord.js';
+import {prisma} from '../index';
 
 const options: {
 	[key: string]: {

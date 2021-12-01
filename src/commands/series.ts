@@ -1,12 +1,13 @@
-import {CommandInteraction} from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {SlashCommandSubcommandBuilder} from '@discordjs/builders';
-import {SlashCommandSubcommandGroupBuilder} from '@discordjs/builders';
-import {SlashCommandStringOption} from '@discordjs/builders';
+import {
+	SlashCommandBuilder,
+	SlashCommandStringOption,
+	SlashCommandSubcommandBuilder,
+	SlashCommandSubcommandGroupBuilder
+} from '@discordjs/builders';
+import {CommandInteraction, Guild} from 'discord.js';
+import {cleanUp} from '../utils';
 import {execute as executeDelete} from './subcommands/series-delete';
 import {execute as executeSet} from './subcommands/series-set';
-import {cleanUp} from '../utils';
-import {Guild} from 'discord.js';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -61,7 +62,7 @@ module.exports = {
 		if (!interaction.guild) {
 			return interaction.reply('Command should be used within a server.');
 		}
-		
+
 		await interaction.deferReply();
 
 		if (interaction.options.getSubcommandGroup(false) === 'delete') {

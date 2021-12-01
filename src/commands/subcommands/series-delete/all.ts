@@ -1,7 +1,5 @@
-import {CommandInteraction} from 'discord.js';
-import {getGuildSeries} from '../../../utils/series';
-import {Guild} from 'discord.js';
-import {deleteGuildSeriesList} from '../../../utils/series';
+import {CommandInteraction, Guild} from 'discord.js';
+import {deleteGuildSeriesList, getGuildSeries} from '../../../utils/series';
 
 export const execute = async (interaction: CommandInteraction) => {
 	const series = await getGuildSeries(interaction.guild as Guild);

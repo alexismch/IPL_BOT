@@ -1,7 +1,5 @@
-import {CommandInteraction} from 'discord.js';
-import {SlashCommandUserOption} from '@discordjs/builders';
-import {Message} from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
+import {SlashCommandBuilder, SlashCommandUserOption} from '@discordjs/builders';
+import {CommandInteraction, Message} from 'discord.js';
 
 module.exports = {
 	data: new SlashCommandBuilder()

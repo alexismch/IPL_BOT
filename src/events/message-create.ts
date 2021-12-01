@@ -1,5 +1,4 @@
-import {Message} from 'discord.js';
-import {MessageMentions} from 'discord.js';
+import {Message, MessageMentions} from 'discord.js';
 import {client} from '../index';
 
 const mentionsMe = (mentions: MessageMentions): boolean => Boolean(mentions.users.get(client.application?.id || ''));

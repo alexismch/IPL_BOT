@@ -11,7 +11,7 @@ import {
 import {readyHandler} from './events/ready';
 import {clientIntents, clientPartials} from './utils';
 
-const express = require('express')
+const express = require('express');
 const prisma = new PrismaClient();
 
 export const client: Client = new Client({
@@ -43,8 +43,6 @@ express()
 				.catch(console.error);
 		}
 	);
-
-
 
 export {
 	prisma

@@ -1,14 +1,14 @@
-import {CommandInteraction} from 'discord.js';
-import {parseRawStringToNumberArray} from '../../utils';
-import {CategoryChannel} from 'discord.js';
-import {getGuildTextCategory} from '../../utils';
-import {Guild} from 'discord.js';
-import {getGuildVoiceCategory} from '../../utils';
-import {getGuildBlocksSeries} from '../../utils';
-import {createGuildBlockSeries} from '../../utils';
-import {deleteGuildSeries} from '../../utils';
-import {createSeries} from '../../utils';
-import {deleteSeries} from '../../utils';
+import {CategoryChannel, CommandInteraction, Guild} from 'discord.js';
+import {
+	createGuildBlockSeries,
+	createSeries,
+	deleteGuildSeries,
+	deleteSeries,
+	getGuildBlocksSeries,
+	getGuildTextCategory,
+	getGuildVoiceCategory,
+	parseRawStringToNumberArray
+} from '../../utils';
 
 export const execute = async (interaction: CommandInteraction) => {
 	const {

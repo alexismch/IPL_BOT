@@ -1,9 +1,6 @@
 import {Series} from '@prisma/client';
-import {Guild} from 'discord.js';
-import {CategoryChannel} from 'discord.js';
+import {CategoryChannel, Guild, Permissions, Role} from 'discord.js';
 import {prisma} from '../index';
-import {Permissions} from 'discord.js';
-import {Role} from 'discord.js';
 
 type CategoriesTypes = 'TEXT' | 'VOICE';
 const CategoriesNames = {

@@ -1,7 +1,6 @@
-import path from 'path';
+import {Collection, CommandInteraction} from 'discord.js';
 import fs from 'fs';
-import {Collection} from 'discord.js';
-import {CommandInteraction} from 'discord.js';
+import path from 'path';
 
 const commandsDirPath: string = path.join(__dirname, '/../commands');
 const commandFiles = fs.readdirSync(commandsDirPath).filter(file => file.endsWith('.js'));
