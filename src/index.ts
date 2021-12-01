@@ -11,6 +11,7 @@ import {
 import {readyHandler} from './events/ready';
 import {clientIntents, clientPartials} from './utils';
 
+const express = require('express')
 const prisma = new PrismaClient();
 
 export const client: Client = new Client({
@@ -28,14 +29,22 @@ client.on('guildMemberRemove', guildMemberRemoveHandler);
 
 client.on('messageCreate', messageCreateHandler);
 
-prisma
-	.$connect()
-	.then(() => {
-		client
-			.login(process.env.DISCORD_TOKEN)
-			.catch(console.error);
-	})
-	.catch(console.error);
+express()
+	.listen(
+		process.env.PORT || 5000,
+		() => {
+			prisma
+				.$connect()
+				.then(() => {
+					client
+						.login(process.env.DISCORD_TOKEN)
+						.catch(console.error);
+				})
+				.catch(console.error);
+		}
+	);
+
+
 
 export {
 	prisma
