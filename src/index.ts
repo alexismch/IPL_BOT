@@ -4,6 +4,7 @@ import {PrismaClient} from '@prisma/client';
 import {Client} from 'discord.js';
 import {
 	guildCreateHandler,
+	guildDeleteHandler,
 	guildMemberAddHandler,
 	guildMemberRemoveHandler,
 	interactionCreateHandler,
@@ -23,6 +24,8 @@ export const client: Client = new Client({
 client.on('ready', readyHandler);
 
 client.on('guildCreate', guildCreateHandler);
+
+client.on('guildDelete', guildDeleteHandler);
 
 client.on('interactionCreate', interactionCreateHandler);
 

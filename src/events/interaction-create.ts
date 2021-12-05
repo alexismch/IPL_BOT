@@ -8,6 +8,7 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
 		return;
 	}
 
+	// TODO: verify all command
 	const command = commands.get(interaction.commandName);
 
 	if (!command) {
