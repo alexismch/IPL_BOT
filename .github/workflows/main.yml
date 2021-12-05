@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main-front branch
   push:
-    branches: [ main-front, main-bot ]
+    branches: [ main-front ]
   pull_request:
-    branches: [ main-front, main-bot ]
+    branches: [ main-front ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
