@@ -1,4 +1,5 @@
-import {Collection, CommandInteraction} from 'discord.js';
+import {SlashCommandBuilder} from '@discordjs/builders';
+import {Collection, CommandInteraction, Permissions} from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,7 +12,13 @@ type CommandsAdapter = {
 	get(): any
 }
 
-let commandsCollection: Collection<string, { execute(interaction: CommandInteraction): Promise<void> }>;
+export type Command = {
+	isAdmin?: boolean,
+	data: SlashCommandBuilder,
+	execute(interaction: CommandInteraction): Promise<void>
+}
+
+let commandsCollection: Collection<string, Command>;
 const commandsCollectionAdapter: CommandsAdapter = {
 	add(command: any): void {
 		commandsCollection.set(command.data.name, command);
@@ -24,7 +31,7 @@ const commandsCollectionAdapter: CommandsAdapter = {
 	}
 };
 
-let commandsArray: any[];
+let commandsArray: Command[];
 const commandsArrayAdapter: CommandsAdapter = {
 	add(command: any): void {
 		commandsArray.push(command.data.toJSON());
@@ -45,22 +52,46 @@ const commandsCollections: {
 	ARRAY: commandsArrayAdapter
 };
 
-const getCommands = (collectionType: CommandsCollections): Collection<string, { execute(interaction: CommandInteraction): Promise<void> }> | any[] => {
+type getCommandsOptions = {
+	isAdmin?: boolean
+}
+
+const getCommands = (collectionType: CommandsCollections, options?: getCommandsOptions): Collection<string, Command> | Command[] => {
 	const commands: CommandsAdapter = commandsCollections[collectionType];
 	commands.init();
 	for (const file of commandFiles) {
 		const command = require(`${commandsDirPath}/${file}`);
-		commands.add(command);
+		if (options?.isAdmin != undefined) {
+			const isAdmin = command.isAdmin || false;
+			if (options.isAdmin === isAdmin) {
+				commands.add(command);
+			}
+		} else {
+			commands.add(command);
+		}
 	}
 	return commands.get();
 };
 
-const getCommandsArray = (): any[] => getCommands('ARRAY') as any [];
-const getCommandsCollection = (): Collection<string, { execute(interaction: CommandInteraction): Promise<void> }> =>
-	getCommands('COLLECTION') as Collection<string, { execute(interaction: CommandInteraction): Promise<void> }>;
+const getCommandsArray = (options?: getCommandsOptions): Command[] => getCommands('ARRAY', options) as any [];
+const getCommandsCollection = (options?: getCommandsOptions): Collection<string, Command> =>
+	getCommands('COLLECTION', options) as Collection<string, Command>;
+
+const memberHasPermission = async (interaction: CommandInteraction): Promise<boolean> => {
+	try {
+		const commandPermissions = interaction.command?.permissions
+			|| (await interaction.guild?.commands.fetch(interaction.commandId))?.permissions;
+		const commandsHasPermissions = Boolean(await commandPermissions?.fetch({}));
+		return (commandsHasPermissions)
+			|| (interaction.member?.permissions as Permissions).has(Permissions.FLAGS.ADMINISTRATOR);
+	} catch (e) {
+		return (interaction.member?.permissions as Permissions).has(Permissions.FLAGS.ADMINISTRATOR);
+	}
+};
 
 export {
 	getCommands,
 	getCommandsArray,
-	getCommandsCollection
+	getCommandsCollection,
+	memberHasPermission
 };

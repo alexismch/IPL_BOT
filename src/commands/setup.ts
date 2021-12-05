@@ -1,6 +1,7 @@
 import {SlashCommandBuilder, SlashCommandChannelOption, SlashCommandRoleOption} from '@discordjs/builders';
 import {Settings} from '@prisma/client';
-import {CommandInteraction, GuildMemberRoleManager, MessageEmbed, Permissions} from 'discord.js';
+import {CommandInteraction, Guild, MessageEmbed} from 'discord.js';
+import {adminCommands} from '../events';
 import {prisma} from '../index';
 
 const options: {
@@ -28,6 +29,7 @@ const options: {
 };
 
 module.exports = {
+	isAdmin: true,
 	data: new SlashCommandBuilder()
 		.setName('setup')
 		.setDescription('Setup the bot settings for the server')
@@ -46,41 +48,37 @@ module.exports = {
 				.setName(options.VERIFIED_ROLE.optionName)
 				.setDescription('The role that will be applied to verified people')
 		),
-	async execute(interaction: CommandInteraction) {
-		if (!interaction.guild) {
-			return interaction.reply('Command should be used within a server.');
-		}
+	async execute(interaction: CommandInteraction & { guild: Guild; }) {
+		await interaction.deferReply();
 
 		const {id: settingsId, ...settings} = await prisma.settings.findFirst({
 			where: {
-				guildId: interaction.guild?.id
+				guildId: interaction.guild.id
 			}
 		}) || {
 			id: '000000000000000000000000',
-			guildId: interaction.guild?.id,
+			guildId: interaction.guild.id,
 			adminRole: null,
 			helpTicketsChannel: null,
 			verifiedRole: null
 		};
-
-		if (!(settings.adminRole && (interaction.member?.roles as GuildMemberRoleManager).resolve(settings.adminRole))
-			&& !(interaction.member?.permissions as Permissions).has('ADMINISTRATOR')) {
-			return interaction.reply({
-				content: 'You should have the bot Admin Role or admin permission to execute this command.',
-				ephemeral: true
-			});
-		}
+		let adminRoleChanged = false;
 
 		let embed = new MessageEmbed()
 			.setColor('#3ba55c')
 			.setTitle('Bot settings updated!')
-			.setDescription(`<@${interaction.user.id}> has update the bot settings of the server.`);
+			.setDescription(`<@${interaction.user.id}> has updated the bot settings of the server.`);
 
 		for (let optionKey in options) {
 			const option = interaction.options.get(options[optionKey].optionName);
 			if (option) {
 				let oldValue: string | null = settings[options[optionKey].dbName];
 				let textValue: string = option.value as string;
+				if (oldValue === textValue) {
+					continue;
+				} else if (options[optionKey].name === options.ADMIN_ROLE.name) {
+					adminRoleChanged = true;
+				}
 				settings[options[optionKey].dbName] = textValue;
 
 				switch (option.type) {
@@ -104,7 +102,42 @@ module.exports = {
 			update: settings
 		});
 
-		return interaction.reply({
+		if (!embed.fields.length) {
+			embed.addField('No change', ':man_shrugging:');
+		} else if (adminRoleChanged) {
+			const fullPermissions: any[] = [];
+
+			const commandsNames = adminCommands.reduce((names: string[], command: SlashCommandBuilder) => {
+				names.push(command.name);
+				return names;
+			}, []);
+			const commandsCollection = (await interaction.guild.commands.fetch()).filter(command => commandsNames.includes(command.name));
+			const commands = commandsCollection.values();
+
+			let command = commands.next().value;
+			while (command) {
+				fullPermissions.push({
+					id: command.id,
+					permissions: [
+						{
+							id: settings.adminRole,
+							type: 'ROLE',
+							permission: true
+						},
+						{
+							id: interaction.guild.roles.everyone.id,
+							type: 'ROLE',
+							permission: false
+						}
+					]
+				});
+				command = commands.next().value;
+			}
+
+			await interaction.guild.commands.permissions.set({fullPermissions});
+		}
+
+		return interaction.followUp({
 			embeds: [embed]
 		});
 	}

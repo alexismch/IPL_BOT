@@ -3,12 +3,13 @@ require('dotenv').config();
 import {PrismaClient} from '@prisma/client';
 import {Client} from 'discord.js';
 import {
+	guildCreateHandler,
 	guildMemberAddHandler,
 	guildMemberRemoveHandler,
 	interactionCreateHandler,
-	messageCreateHandler
+	messageCreateHandler,
+	readyHandler
 } from './events';
-import {readyHandler} from './events/ready';
 import {clientIntents, clientPartials} from './utils';
 
 const express = require('express');
@@ -20,6 +21,8 @@ export const client: Client = new Client({
 });
 
 client.on('ready', readyHandler);
+
+client.on('guildCreate', guildCreateHandler);
 
 client.on('interactionCreate', interactionCreateHandler);
 

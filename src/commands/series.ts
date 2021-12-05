@@ -10,6 +10,7 @@ import {execute as executeDelete} from './subcommands/series-delete';
 import {execute as executeSet} from './subcommands/series-set';
 
 module.exports = {
+	isAdmin: true,
 	data: new SlashCommandBuilder()
 		.setName('series')
 		.setDescription('Manage series')
@@ -59,10 +60,6 @@ module.exports = {
 					)
 		),
 	async execute(interaction: CommandInteraction) {
-		if (!interaction.guild) {
-			return interaction.reply('Command should be used within a server.');
-		}
-
 		await interaction.deferReply();
 
 		if (interaction.options.getSubcommandGroup(false) === 'delete') {
