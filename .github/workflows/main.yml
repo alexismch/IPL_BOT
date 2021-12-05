@@ -27,4 +27,4 @@ jobs:
         with:
           node-version: '17'
       - run: npm install
-      - run: npm build
+      - run: npm run build
