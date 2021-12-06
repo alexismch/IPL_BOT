@@ -14,7 +14,7 @@ import {
 import {clientIntents, clientPartials} from './utils';
 
 const express = require('express');
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 export const client: Client = new Client({
 	intents: clientIntents,
@@ -49,7 +49,3 @@ express()
 				.catch(console.error);
 		}
 	);
-
-export {
-	prisma
-};

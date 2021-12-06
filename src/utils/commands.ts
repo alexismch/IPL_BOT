@@ -73,11 +73,11 @@ const getCommands = (collectionType: CommandsCollections, options?: getCommandsO
 	return commands.get();
 };
 
-const getCommandsArray = (options?: getCommandsOptions): Command[] => getCommands('ARRAY', options) as any [];
-const getCommandsCollection = (options?: getCommandsOptions): Collection<string, Command> =>
+export const getCommandsArray = (options?: getCommandsOptions): Command[] => getCommands('ARRAY', options) as any [];
+export const getCommandsCollection = (options?: getCommandsOptions): Collection<string, Command> =>
 	getCommands('COLLECTION', options) as Collection<string, Command>;
 
-const memberHasPermission = async (interaction: CommandInteraction): Promise<boolean> => {
+export const memberHasPermission = async (interaction: CommandInteraction): Promise<boolean> => {
 	try {
 		const commandPermissions = interaction.command?.permissions
 			|| (await interaction.guild?.commands.fetch(interaction.commandId))?.permissions;
@@ -87,11 +87,4 @@ const memberHasPermission = async (interaction: CommandInteraction): Promise<boo
 	} catch (e) {
 		return (interaction.member?.permissions as Permissions).has(Permissions.FLAGS.ADMINISTRATOR);
 	}
-};
-
-export {
-	getCommands,
-	getCommandsArray,
-	getCommandsCollection,
-	memberHasPermission
 };
