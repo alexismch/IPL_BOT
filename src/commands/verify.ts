@@ -1,5 +1,6 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
 import {CommandInteraction, Guild, GuildMember} from 'discord.js';
+import {delay} from '../utils';
 import {guildMemberAddHandler} from '../events';
 import {prisma} from '../index';
 
@@ -22,11 +23,18 @@ module.exports = {
 			?.filter(member => !member.roles.cache.has(settings.verifiedRole as string) && !member.user.bot);
 		const members = membersCollection.values();
 
+		let fails = 0;
+
 		let member: GuildMember = members.next().value;
 		while (member) {
-			await guildMemberAddHandler(member);
+			await delay(1000);
+			try {
+				await guildMemberAddHandler(member);
+			} catch {
+				fails++;
+			}
 			member = members.next().value;
 		}
-		await interaction.followUp({content: `A message has been sent to ${membersCollection.size} members.`});
+		await interaction.followUp({content: `A message has been sent to ${membersCollection.size} members (${fails} possible fails).`});
 	}
 };
