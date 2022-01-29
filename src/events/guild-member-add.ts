@@ -2,7 +2,12 @@ import {DMChannel, GuildMember, MessageActionRow, MessageButton, MessageEmbed} f
 import {prisma} from '../';
 
 export const guildMemberAddHandler = async (guildMember: GuildMember) => {
-	const verification = await prisma.verification.create({
+	const verification = await prisma.verification.findFirst({
+		where: {
+			guildId: guildMember.guild?.id as string,
+			userId: guildMember.user.id
+		}
+	}) || await prisma.verification.create({
 		data: {
 			guildId: guildMember.guild?.id as string,
 			userId: guildMember.user.id
