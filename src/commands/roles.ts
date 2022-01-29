@@ -42,6 +42,6 @@ module.exports = {
 			}
 			member = members?.next().value;
 		}
-		await interaction.followUp({content: `<@&${role}> role has been removed from ${membersCollection?.size || 0} members (${fails} possible fails).`});
+		await interaction.followUp({content: `${role} role has been removed from ${membersCollection?.size || 0} members (${fails} possible fails).`});
 	}
 };
