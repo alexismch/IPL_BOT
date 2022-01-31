@@ -10,15 +10,22 @@ export const adminCommands = commands.reduce((array: any[], command: Command) =>
 }, []);
 
 export const guildCreateHandler = async (guild: Guild) => {
-	await guild.commands.set(adminCommands);
-	const owner = await guild.members.resolve(guild.ownerId);
-	const dmChannel = await owner?.createDM();
-	dmChannel?.send({
-		embeds: [
-			new MessageEmbed()
-				.setColor('#3ba55c')
-				.setTitle('Thanks for adding me!')
-				.setDescription(`Don't forget to setup your server settings via the command **/setup** in order to have all features enabled.`)
-		]
-	});
+	try {
+		await guild.commands.set(adminCommands);
+		const owner = await guild.members.resolve(guild.ownerId);
+		const dmChannel = await owner?.createDM();
+		dmChannel?.send({
+			embeds: [
+				new MessageEmbed()
+					.setColor('#3ba55c')
+					.setTitle('Thanks for adding me!')
+					.setDescription(`Don't forget to setup your server settings via the command **/setup** in order to have all features enabled.`)
+			]
+		});
+	} catch (e) {
+		console.log('---');
+		console.log(`guildCreateHandler error ${guild.id} ${guild.name}`);
+		console.log(e);
+		console.log('---');
+	}
 };

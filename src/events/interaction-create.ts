@@ -22,9 +22,12 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
 				ephemeral: true
 			});
 		}
-		return await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
+		await command.execute(interaction);
+	} catch (e) {
+		console.log('---');
+		console.log(`interactionCreateHandler error ${interaction.id} ${interaction.commandName}`);
+		console.log(e);
+		console.log('---');
 		return interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
 	}
 };
